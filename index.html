@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>电子烟花效果（含五星）</title>
+    <style>
+        body {
+            background-color: #000;
+            overflow: hidden;
+            margin: 0;
+        }
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px;
+        }
+        .star {
+            position: absolute;
+            color: red;
+            font-size: 24px;
+            text-shadow: 0 0 10px #ff0000;
+            transform-origin: center;
+        }
+    </style>
+</head>
+<body>
+    <script>
+        document.addEventListener('click', function(e) {
+            createFirework(e.clientX, e.clientY);
+            createStar(e.clientX, e.clientY);
+        });
+
+        // 烟花颗粒效果（原函数）
+        function createFirework(x, y) {
+            const colors = ['#ff0000', '#ffff00', '#00ff00', '#00ffff', '#0000ff', '#ff00ff'];
+            
+            for (let i = 0; i < 100; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'firework';
+                particle.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                document.body.appendChild(particle);
+                
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 5 + 2;
+                const lifetime = Math.random() * 2000 + 1000;
+                
+                let vx = Math.cos(angle) * speed;
+                let vy = Math.sin(angle) * speed;
+                
+                let startTime = Date.now();
+                
+                function animate() {
+                    const elapsed = Date.now() - startTime;
+                    const progress = elapsed / lifetime;
+                    
+                    if (progress >= 1) {
+                        particle.remove();
+                        return;
+                    }
+                    
+                    particle.style.left = x + vx * elapsed / 20 + 'px';
+                    particle.style.top = y + vy * elapsed / 20 + 'px';
+                    particle.style.opacity = 1 - progress;
+                    
+                    vy += 0.05;
+                    requestAnimationFrame(animate);
+                }
+                animate();
+            }
+        }
+
+        // 新增红色五角星效果
+        function createStar(x, y) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.innerHTML = '★';
+            star.style.left = (x - 12) + 'px';
+            star.style.top = (y - 12) + 'px';
+            document.body.appendChild(star);
+
+            let scale = 1;
+            let opacity = 1;
+            let rotation = 0;
+            let startTime = Date.now();
+            
+            function animateStar() {
+                const elapsed = Date.now() - startTime;
+                if (elapsed > 2000) {
+                    star.remove();
+                    return;
+                }
+                
+                scale = 1 + elapsed * 0.002;
+                opacity = 1 - elapsed / 2000;
+                rotation = elapsed * 0.1;
+                
+                star.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
+                star.style.opacity = opacity;
+                
+                requestAnimationFrame(animateStar);
+            }
+            animateStar();
+        }
+    </script>
+</body>
+</html>
